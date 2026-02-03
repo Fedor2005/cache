@@ -8,7 +8,7 @@ object CacheSpecification extends Properties("Cache") {
     c.get(k) == Some(v)
   }
 
-  property("overwrite") = forAll { (k: String, v1: Int, v2: Int) =>
+  property("overWrite") = forAll { (k: String, v1: Int, v2: Int) =>
     val c = new SimpleCache
     c.put(k, v1)
     c.put(k, v2)
@@ -24,6 +24,14 @@ object CacheSpecification extends Properties("Cache") {
     }
     else true
   }
+  
+  property("idempotencePut") = forAll {(k:String, v: Int)=>
+    val c = new SimpleCache
+    c.put(k, v)
+    assert(c.get(k) == Some(v), "Error in put")
+    c.put(k, v)
+    c.get(k)==Some(v)
+  }
 
   property("modifyExisting") = forAll { (k: String, v: Int, delta: Int) =>
     val c = new SimpleCache
@@ -36,5 +44,13 @@ object CacheSpecification extends Properties("Cache") {
     val c = new SimpleCache
     c.modify(k, _ + delta)
     c.get(k) == None
+  }
+  
+  property("composingModify") = forAll{ (k:String, v:Int, delta: Int, coef: Int) =>
+    val c = new SimpleCache
+    c.put(k, v)
+    c.modify(k, _*coef)
+    c.modify(k, _+delta)
+    c.get(k) == Some(v*coef + delta)
   }
 }

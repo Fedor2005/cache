@@ -13,7 +13,7 @@ type Id[A] = A
 class SimpleCache extends Cache[Id, String, Int]:
   private val map = Map.empty[String, Int]
 
-  override def get(key: String): Option[Int] = map.get(key)
+  def get(key: String): Option[Int] = map.get(key)
   def put(key: String, value: Int): Unit = map.put(key, value)
   def modify(key: String, f: Int=>Int): Unit ={
     val current = map.get(key) match {
@@ -21,7 +21,5 @@ class SimpleCache extends Cache[Id, String, Int]:
       case None => 0
     }
     ()
-  } 
+  }
   override def toString: String = map.toString
-    
-
